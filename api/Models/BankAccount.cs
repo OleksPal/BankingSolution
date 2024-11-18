@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace api.Models
 {
@@ -11,7 +12,8 @@ namespace api.Models
         public string AccountNumber { get; set; }
 
         [Required]
-        [Range(0.0, double.PositiveInfinity)]
+        [Precision(19, 4)]
+        [Range(0, Double.MaxValue)]
         public decimal Balance { get; set; }
     }
 }
