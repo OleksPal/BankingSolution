@@ -34,6 +34,7 @@ namespace api
 
             app.UseAuthorization();
 
+            app.CreateDbIfNotExists();
 
             app.MapControllers();
 
