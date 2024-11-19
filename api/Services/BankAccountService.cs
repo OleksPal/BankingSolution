@@ -68,8 +68,15 @@ namespace api.Services
 
                 if (recipient is not null)
                 {
-                    await Withdraw(senderNumber, amount);
+                    var senderAccount = await Withdraw(senderNumber, amount);
+
+                    if (senderAccount is null)
+                        return null;
+
                     var updatedRecipient = await Deposit(recipientNumber, amount);
+
+                    if (updatedRecipient is null)
+                        return null;
 
                     return updatedRecipient;
                 }
