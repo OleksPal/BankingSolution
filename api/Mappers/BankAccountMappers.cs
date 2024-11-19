@@ -1,10 +1,11 @@
 ﻿using api.Dtos;
+using api.Models;
 
 namespace api.Mappers
 {
     public static class BankAccountMappers
     {
-        public static BankAccountDto ToBankAccountDto(this BankAccountDto bankAccountDto) 
+        public static BankAccountDto ToBankAccountDto(this BankAccount bankAccountDto) 
         {
             return new BankAccountDto
             {
