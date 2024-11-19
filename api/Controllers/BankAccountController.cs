@@ -13,5 +13,24 @@ namespace api.Controllers
         {
             _bankAccountService = bankAccountService;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var bankAccounts = await _bankAccountService.GetAll();
+
+            return Ok(bankAccounts);
+        }
+
+        [HttpGet("{number}")]
+        public async Task<IActionResult> GetBankAccount(string number)
+        {
+            var bankAccount = await _bankAccountService.GetBankAccountByNumber(number);
+
+            if (bankAccount is null)
+                return NotFound();
+
+            return Ok(bankAccount);
+        }
     }
 }
