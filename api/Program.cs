@@ -1,5 +1,6 @@
 
 using api.Data;
+using api.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace api
@@ -11,6 +12,7 @@ namespace api
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddScoped<IBankAccountRepository, BankAccountRepository>();
 
             builder.Services.AddControllers();
 
