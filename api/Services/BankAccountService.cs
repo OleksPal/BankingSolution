@@ -1,5 +1,7 @@
-﻿using api.Models;
+﻿using api.Dtos;
+using api.Models;
 using api.Repositories;
+using api.Mappers;
 
 namespace api.Services
 {
@@ -12,7 +14,7 @@ namespace api.Services
             _bankAccountRepository = bankAccountRepository;
         }
 
-        public async Task<BankAccount> CreateAccount(decimal balance)
+        public async Task<BankAccountDto> CreateAccount(decimal balance)
         {
             if (balance < 0)
                 return null;
@@ -20,16 +22,16 @@ namespace api.Services
             var newBankAccount = new BankAccount
             {
                 Id = Guid.NewGuid(),
-                AccountNumber = "",
+                AccountNumber = Guid.NewGuid().ToString(), // Use guid to generate a random string
                 Balance = balance
             };
 
             await _bankAccountRepository.Insert(newBankAccount);
 
-            return newBankAccount;
+            return newBankAccount.ToBankAccountDto();
         }
 
-        public async Task<BankAccount> Deposit(string number, decimal amount)
+        public async Task<BankAccountDto> Deposit(string number, decimal amount)
         {
             var bankAccount = await _bankAccountRepository.GetByNumber(number);
 
@@ -38,27 +40,28 @@ namespace api.Services
                 bankAccount.Balance += amount;
                 var updatedBankAccount = await _bankAccountRepository.Update(bankAccount);
 
-                return updatedBankAccount;
+                return updatedBankAccount.ToBankAccountDto();
             }
 
             return null;            
         }
 
-        public async Task<ICollection<BankAccount>> GetAll()
+        public async Task<ICollection<BankAccountDto>> GetAll()
         {
             var bankAccounts = await _bankAccountRepository.GetAll();
+            var bankAccountDtos = bankAccounts.Select(bankAccount => bankAccount.ToBankAccountDto());
 
-            return bankAccounts;
+            return bankAccountDtos.ToList();
         }
 
-        public async Task<BankAccount> GetBankAccountByNumber(string number)
+        public async Task<BankAccountDto> GetBankAccountByNumber(string number)
         {
             var bankAccount = await _bankAccountRepository.GetByNumber(number);
 
-            return bankAccount;
+            return bankAccount.ToBankAccountDto();
         }
 
-        public async Task<BankAccount> Transfer(string senderNumber, string recipientNumber, decimal amount)
+        public async Task<BankAccountDto> Transfer(string senderNumber, string recipientNumber, decimal amount)
         {
             var sender = await _bankAccountRepository.GetByNumber(senderNumber);
 
@@ -68,8 +71,15 @@ namespace api.Services
 
                 if (recipient is not null)
                 {
-                    await Withdraw(senderNumber, amount);
+                    var senderAccount = await Withdraw(senderNumber, amount);
+
+                    if (senderAccount is null)
+                        return null;
+
                     var updatedRecipient = await Deposit(recipientNumber, amount);
+
+                    if (updatedRecipient is null)
+                        return null;
 
                     return updatedRecipient;
                 }
@@ -78,7 +88,7 @@ namespace api.Services
             return null;
         }
 
-        public async Task<BankAccount> Withdraw(string number, decimal amount)
+        public async Task<BankAccountDto> Withdraw(string number, decimal amount)
         {
             var bankAccount = await _bankAccountRepository.GetByNumber(number);
 
@@ -87,7 +97,7 @@ namespace api.Services
                 bankAccount.Balance -= amount;
                 var updatedBankAccount = await _bankAccountRepository.Update(bankAccount);
 
-                return updatedBankAccount;
+                return updatedBankAccount.ToBankAccountDto();
             }
 
             return null;
