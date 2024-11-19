@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -7,6 +7,11 @@ namespace api.Controllers
     [ApiController]
     public class BankAccountController : ControllerBase
     {
+        private readonly IBankAccountService _bankAccountService;
 
+        public BankAccountController(IBankAccountService bankAccountService)
+        {
+            _bankAccountService = bankAccountService;
+        }
     }
 }
