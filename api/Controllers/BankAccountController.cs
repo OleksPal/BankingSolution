@@ -32,5 +32,16 @@ namespace api.Controllers
 
             return Ok(bankAccount);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateBankAccount(decimal initialBalance)
+        {
+            var newBankAccount = await _bankAccountService.CreateAccount(initialBalance);
+
+            if (newBankAccount is null)
+                return BadRequest();
+
+            return Ok(newBankAccount);
+        }
     }
 }
