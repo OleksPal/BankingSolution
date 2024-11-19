@@ -20,7 +20,7 @@ namespace api.Services
             var newBankAccount = new BankAccount
             {
                 Id = Guid.NewGuid(),
-                AccountNumber = "",
+                AccountNumber = Guid.NewGuid().ToString(), // Use guid to generate a random string
                 Balance = balance
             };
 
