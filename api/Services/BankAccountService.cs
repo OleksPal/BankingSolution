@@ -2,6 +2,7 @@
 using api.Mappers;
 using api.Models;
 using api.Repositories;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace api.Services
 {
@@ -72,11 +73,32 @@ namespace api.Services
             if (amount < 0)
                 throw new ArgumentOutOfRangeException("Amount should be positive");
 
-            await Withdraw(senderNumber, amount);
-            var updatedRecipient = await Deposit(recipientNumber, amount);
+            if (senderNumber == recipientNumber) 
+                throw new ArgumentOutOfRangeException("You can`t transfer funds to the same bank account");
+
+            // Withdraw funds
+            var sender = await _bankAccountRepository.GetByNumber(senderNumber);
+
+            if (sender is null)
+                throw new ArgumentException($"Bank account with number {senderNumber} doesn`t exists");
+
+            if (sender.Balance < amount)
+                throw new ArgumentException($"Bank account with number {senderNumber} doesn`t have enough funds to withdraw");
+
+            var newSenderBalance = sender.Balance - amount;
+            await _bankAccountRepository.Update(senderNumber, newSenderBalance);
+
+            // Deposit funds
+            var recipient = await _bankAccountRepository.GetByNumber(recipientNumber);
+
+            if (recipient is null)
+                throw new ArgumentException($"Bank account with number {recipientNumber} doesn`t exists");
+
+            var newRecipientBalance = recipient.Balance + amount;
+            var updatedRecipient = await _bankAccountRepository.Update(recipientNumber, newRecipientBalance);
             await _bankAccountRepository.SaveChanges();
 
-            return updatedRecipient;
+            return updatedRecipient.ToBankAccountDto();
         }
 
         public async Task<BankAccountDto> Withdraw(string number, decimal amount)
