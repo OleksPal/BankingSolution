@@ -24,5 +24,46 @@ namespace tests.Service_tests
             Assert.NotEmpty(accountList);
         }
         #endregion
+
+        #region GetBankAccountByNumber
+        [Fact]
+        public async Task GetBankAccountByNumber_Null_ReturnsArgumentException()
+        {
+            // Arrange
+            string nonExistentAccountNumber = null;
+
+            // Act
+            Func<Task> act = () => _bankAccountService.GetBankAccountByNumber(nonExistentAccountNumber);
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentException>(act);
+        }
+
+        [Fact]
+        public async Task GetBankAccountByNumber_NonExistentAccount_ReturnsArgumentException()
+        {
+            // Arrange
+            var nonExistentAccountNumber = String.Empty;
+
+            // Act
+            Func<Task> act = () => _bankAccountService.GetBankAccountByNumber(nonExistentAccountNumber);
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentException>(act);
+        }
+
+        [Fact]
+        public async Task GetBankAccountByNumber_ExistingAccount_ReturnsBankAccount()
+        {
+            // Arrange
+            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
+
+            // Act
+            var bankAccount = await _bankAccountService.GetBankAccountByNumber(existingAccountNumber);
+
+            // Assert
+            Assert.NotNull(bankAccount);
+        }
+        #endregion
     }
 }
