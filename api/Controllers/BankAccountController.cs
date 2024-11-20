@@ -118,11 +118,12 @@ namespace api.Controllers
         [HttpPut]
         public async Task<IActionResult> Transfer(string sender, string recipient, decimal amount)
         {
-            BankAccountDto recipientAccount;
+            List<BankAccountDto> transactionParticipants;
 
             try
             {
-                recipientAccount = await _bankAccountService.Transfer(sender, recipient, amount);
+                var accountCollection = await _bankAccountService.Transfer(sender, recipient, amount);
+                transactionParticipants = accountCollection.ToList();
             }
             catch (ArgumentOutOfRangeException ex)
             {
@@ -137,7 +138,7 @@ namespace api.Controllers
                 return StatusCode(400, ex.Message);
             }
 
-            return Ok(recipientAccount);
+            return Ok(transactionParticipants);
         }
     }
 }
