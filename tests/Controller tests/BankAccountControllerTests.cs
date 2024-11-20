@@ -160,5 +160,62 @@ namespace tests.ControllerTests
             Assert.Equal(expectedBalance, bankAccount.Balance);
         }
         #endregion
+
+        #region Withdraw
+        [Fact]
+        public async Task Withdraw_NonExistentAccount_ReturnsBadRequest()
+        {
+            // Arrange
+            var nonExistentAccountNumber = String.Empty;
+
+            // Act
+            var actionResult = await _bankAccountController.Withdraw(nonExistentAccountNumber, 100);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(actionResult);
+        }
+
+        [Fact]
+        public async Task Withdraw_NegativeAmount_ReturnsBadRequest()
+        {
+            // Arrange
+            var negativeDepositAmount = -5;
+
+            // Act
+            var actionResult = await _bankAccountController.Withdraw(ExistingAccountNumber, negativeDepositAmount);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(actionResult);
+        }
+
+        [Fact]
+        public async Task Withdraw_ZeroAmount_ReturnsArgumentOutOfRangeException()
+        {
+            // Arrange
+            var zeroDepositAmount = 0;
+
+            // Act
+            var actionResult = await _bankAccountController.Withdraw(ExistingAccountNumber, zeroDepositAmount);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(actionResult);
+        }
+
+        [Fact]
+        public async Task Withdraw_ExistingUser_PositiveAmount_ReturnsUpdatedAccount()
+        {
+            // Arrange
+            var depositAmount = 100;
+            var expectedBalance = 0;
+
+            // Act
+            var actionResult = await _bankAccountController.Withdraw(ExistingAccountNumber, depositAmount);
+
+            // Assert
+            var okResult = actionResult as OkObjectResult;
+            var bankAccount = okResult.Value as BankAccountDto;
+            Assert.Equal(expectedBalance, bankAccount.Balance);
+        }
+        #endregion
     }
 }
