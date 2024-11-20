@@ -223,5 +223,75 @@ namespace tests.Service_tests
             Assert.Equal(expectedBalance, bankAccount.Balance);
         }
         #endregion
+
+        #region Transfer
+        [Fact]
+        public async Task Transfer_SameAccount_ReturnsArgumentException()
+        {
+            // Arrange
+            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
+
+            // Act
+            Func<Task> act = () => _bankAccountService.Transfer(existingAccountNumber, existingAccountNumber, 100);
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentException>(act);
+        }
+
+        [Fact]
+        public async Task Transfer_NegativeAmount_ReturnsArgumentOutOfRangeException()
+        {
+            // Arrange
+            var senderAccountNumber = "UAYYZZZZZZ0000012345678901234";
+            var recipient = await _bankAccountService.CreateAccount(100);
+            var negativeDepositAmount = -5;
+
+            // Act
+            Func<Task> act = () => _bankAccountService
+            .Transfer(senderAccountNumber, recipient.AccountNumber, negativeDepositAmount);
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(act);
+        }
+
+        [Fact]
+        public async Task Transfer_ZeroAmount_ReturnsArgumentOutOfRangeException()
+        {
+            // Arrange
+            var senderAccountNumber = "UAYYZZZZZZ0000012345678901234";
+            var recipient = await _bankAccountService.CreateAccount(100);
+            var zeroDepositAmount = 0;
+
+            // Act
+            Func<Task> act = () => _bankAccountService
+            .Transfer(senderAccountNumber, recipient.AccountNumber, zeroDepositAmount);
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(act);
+        }
+
+        [Fact]
+        public async Task Transfer_ExistingUser_PositiveAmount_ReturnsUpdatedAccount()
+        {
+            // Arrange
+            var senderAccountNumber = "UAYYZZZZZZ0000012345678901234";
+            var recipient = await _bankAccountService.CreateAccount(100);
+            var amount = 100;
+            var senderExpectedBalance = 0;
+            var recipientExpectedBalance = 200;
+
+            // Act
+            var bankAccounts = await _bankAccountService
+                .Transfer(senderAccountNumber, recipient.AccountNumber, amount);
+
+            // Assert
+            var senderBalance = bankAccounts.First(account => account.AccountNumber == senderAccountNumber).Balance;
+            var recipientBalance = bankAccounts.First(account => account.AccountNumber == recipient.AccountNumber).Balance;
+
+            Assert.Multiple(
+                () => Assert.Equal(senderExpectedBalance, senderBalance),
+                () => Assert.Equal(recipientExpectedBalance, recipientBalance));
+        }
+        #endregion
     }
 }

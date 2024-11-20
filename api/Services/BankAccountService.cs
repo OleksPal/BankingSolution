@@ -61,7 +61,7 @@ namespace api.Services
         public async Task<ICollection<BankAccountDto>> Transfer(string senderNumber, string recipientNumber, decimal amount)
         {
             if (senderNumber == recipientNumber) 
-                throw new ArgumentOutOfRangeException("You can`t transfer funds to the same bank account");
+                throw new ArgumentException("You can`t transfer funds to the same bank account");
 
             var sender = await WithdrawFunds(senderNumber, amount);
             var recipient = await DepositFunds(recipientNumber, amount);
