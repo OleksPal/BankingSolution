@@ -7,6 +7,7 @@ namespace tests.Service_tests
     public class BankAccountServiceTests
     {
         protected readonly IBankAccountService _bankAccountService;
+        protected readonly string ExistingAccountNumber = "UAYYZZZZZZ0000012345678901234";
 
         public BankAccountServiceTests()
         {
@@ -56,11 +57,8 @@ namespace tests.Service_tests
         [Fact]
         public async Task GetBankAccountByNumber_ExistingAccount_ReturnsBankAccount()
         {
-            // Arrange
-            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
-
             // Act
-            var bankAccount = await _bankAccountService.GetBankAccountByNumber(existingAccountNumber);
+            var bankAccount = await _bankAccountService.GetBankAccountByNumber(ExistingAccountNumber);
 
             // Assert
             Assert.NotNull(bankAccount);
@@ -126,11 +124,10 @@ namespace tests.Service_tests
         public async Task Deposit_NegativeAmount_ReturnsArgumentOutOfRangeException()
         {
             // Arrange
-            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
             var negativeDepositAmount = -5;
 
             // Act
-            Func<Task> act = () => _bankAccountService.Deposit(existingAccountNumber, negativeDepositAmount);
+            Func<Task> act = () => _bankAccountService.Deposit(ExistingAccountNumber, negativeDepositAmount);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(act);
@@ -140,11 +137,10 @@ namespace tests.Service_tests
         public async Task Deposit_ZeroAmount_ReturnsArgumentOutOfRangeException()
         {
             // Arrange
-            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
             var zeroDepositAmount = 0;
 
             // Act
-            Func<Task> act = () => _bankAccountService.Deposit(existingAccountNumber, zeroDepositAmount);
+            Func<Task> act = () => _bankAccountService.Deposit(ExistingAccountNumber, zeroDepositAmount);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(act);
@@ -154,12 +150,11 @@ namespace tests.Service_tests
         public async Task Deposit_ExistingUser_PositiveAmount_ReturnsUpdatedAccount()
         {
             // Arrange
-            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
             var depositAmount = 100;
             var expectedBalance = 200;
 
             // Act
-            var bankAccount = await _bankAccountService.Deposit(existingAccountNumber, depositAmount);
+            var bankAccount = await _bankAccountService.Deposit(ExistingAccountNumber, depositAmount);
 
             // Assert
             Assert.Equal(expectedBalance, bankAccount.Balance);
@@ -184,11 +179,10 @@ namespace tests.Service_tests
         public async Task Withdraw_NegativeAmount_ReturnsArgumentOutOfRangeException()
         {
             // Arrange
-            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
             var negativeDepositAmount = -5;
 
             // Act
-            Func<Task> act = () => _bankAccountService.Withdraw(existingAccountNumber, negativeDepositAmount);
+            Func<Task> act = () => _bankAccountService.Withdraw(ExistingAccountNumber, negativeDepositAmount);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(act);
@@ -198,11 +192,10 @@ namespace tests.Service_tests
         public async Task Withdraw_ZeroAmount_ReturnsArgumentOutOfRangeException()
         {
             // Arrange
-            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
             var zeroDepositAmount = 0;
 
             // Act
-            Func<Task> act = () => _bankAccountService.Withdraw(existingAccountNumber, zeroDepositAmount);
+            Func<Task> act = () => _bankAccountService.Withdraw(ExistingAccountNumber, zeroDepositAmount);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(act);
@@ -212,12 +205,11 @@ namespace tests.Service_tests
         public async Task Withdraw_ExistingUser_PositiveAmount_ReturnsUpdatedAccount()
         {
             // Arrange
-            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
             var depositAmount = 100;
             var expectedBalance = 0;
 
             // Act
-            var bankAccount = await _bankAccountService.Withdraw(existingAccountNumber, depositAmount);
+            var bankAccount = await _bankAccountService.Withdraw(ExistingAccountNumber, depositAmount);
 
             // Assert
             Assert.Equal(expectedBalance, bankAccount.Balance);
@@ -228,11 +220,8 @@ namespace tests.Service_tests
         [Fact]
         public async Task Transfer_SameAccount_ReturnsArgumentException()
         {
-            // Arrange
-            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
-
             // Act
-            Func<Task> act = () => _bankAccountService.Transfer(existingAccountNumber, existingAccountNumber, 100);
+            Func<Task> act = () => _bankAccountService.Transfer(ExistingAccountNumber, ExistingAccountNumber, 100);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(act);
@@ -242,7 +231,7 @@ namespace tests.Service_tests
         public async Task Transfer_NegativeAmount_ReturnsArgumentOutOfRangeException()
         {
             // Arrange
-            var senderAccountNumber = "UAYYZZZZZZ0000012345678901234";
+            var senderAccountNumber = ExistingAccountNumber;
             var recipient = await _bankAccountService.CreateAccount(100);
             var negativeDepositAmount = -5;
 
@@ -258,7 +247,7 @@ namespace tests.Service_tests
         public async Task Transfer_ZeroAmount_ReturnsArgumentOutOfRangeException()
         {
             // Arrange
-            var senderAccountNumber = "UAYYZZZZZZ0000012345678901234";
+            var senderAccountNumber = ExistingAccountNumber;
             var recipient = await _bankAccountService.CreateAccount(100);
             var zeroDepositAmount = 0;
 
@@ -274,7 +263,7 @@ namespace tests.Service_tests
         public async Task Transfer_ExistingUser_PositiveAmount_ReturnsUpdatedAccount()
         {
             // Arrange
-            var senderAccountNumber = "UAYYZZZZZZ0000012345678901234";
+            var senderAccountNumber = ExistingAccountNumber;
             var recipient = await _bankAccountService.CreateAccount(100);
             var amount = 100;
             var senderExpectedBalance = 0;

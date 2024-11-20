@@ -8,6 +8,7 @@ namespace tests.Repository_tests
     public class BankAccountRepositoryTests
     {
         protected readonly IBankAccountRepository _bankAccountRepository;
+        protected readonly string ExistingAccountNumber = "UAYYZZZZZZ0000012345678901234";
 
         public BankAccountRepositoryTests()
         {
@@ -44,11 +45,8 @@ namespace tests.Repository_tests
         [Fact]
         public async Task GetByNumber_ExistingAccount_ReturnsBankAccount()
         {
-            // Arrange
-            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
-
             // Act
-            var bankAccount = await _bankAccountRepository.GetByNumber(existingAccountNumber);
+            var bankAccount = await _bankAccountRepository.GetByNumber(ExistingAccountNumber);
 
             // Assert
             Assert.NotNull(bankAccount);
@@ -119,11 +117,10 @@ namespace tests.Repository_tests
         public async Task Update_ValidBankAccount_ReturnsSameAccount()
         {
             // Arrange
-            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
             var newBankAccountBalance = 1000;
 
             // Act
-            var updatedBankAccount = await _bankAccountRepository.Update(existingAccountNumber, newBankAccountBalance);
+            var updatedBankAccount = await _bankAccountRepository.Update(ExistingAccountNumber, newBankAccountBalance);
 
             // Assert
             Assert.Equal(newBankAccountBalance, updatedBankAccount.Balance);
