@@ -1,10 +1,5 @@
 ﻿using api.Models;
 using api.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using tests.Helpers;
 
 namespace tests.Repository_tests

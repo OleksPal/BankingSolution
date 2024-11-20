@@ -2,7 +2,6 @@
 using api.Mappers;
 using api.Models;
 using api.Repositories;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace api.Services
 {
