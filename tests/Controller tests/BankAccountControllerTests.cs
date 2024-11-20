@@ -189,7 +189,7 @@ namespace tests.ControllerTests
         }
 
         [Fact]
-        public async Task Withdraw_ZeroAmount_ReturnsArgumentOutOfRangeException()
+        public async Task Withdraw_ZeroAmount_ReturnsBadRequest()
         {
             // Arrange
             var zeroDepositAmount = 0;
@@ -215,6 +215,79 @@ namespace tests.ControllerTests
             var okResult = actionResult as OkObjectResult;
             var bankAccount = okResult.Value as BankAccountDto;
             Assert.Equal(expectedBalance, bankAccount.Balance);
+        }
+        #endregion
+
+        #region Transfer
+        [Fact]
+        public async Task Transfer_SameAccount_ReturnsNotFound()
+        {
+            // Act
+            var actionResult = await _bankAccountController.Transfer(ExistingAccountNumber, ExistingAccountNumber, 100);
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(actionResult);
+        }
+
+        [Fact]
+        public async Task Transfer_NegativeAmount_ReturnsBadRequest()
+        {
+            // Arrange
+            var senderAccountNumber = ExistingAccountNumber;
+            var addActionResult = await _bankAccountController.CreateBankAccount(100);
+            var recipient = (addActionResult as OkObjectResult).Value as BankAccountDto;
+            var negativeDepositAmount = -5;
+
+            // Act
+            var actionResult = await _bankAccountController
+            .Transfer(senderAccountNumber, recipient.AccountNumber, negativeDepositAmount);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(actionResult);
+        }
+
+        [Fact]
+        public async Task Transfer_ZeroAmount_ReturnsBadRequest()
+        {
+            // Arrange
+            var senderAccountNumber = ExistingAccountNumber;
+            var addActionResult = await _bankAccountController.CreateBankAccount(100);
+            var recipient = (addActionResult as OkObjectResult).Value as BankAccountDto;
+            var zeroDepositAmount = 0;
+
+            // Act
+            var actionResult = await _bankAccountController
+            .Transfer(senderAccountNumber, recipient.AccountNumber, zeroDepositAmount);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(actionResult);
+        }
+
+        [Fact]
+        public async Task Transfer_ExistingUser_PositiveAmount_ReturnsUpdatedAccounts()
+        {
+            // Arrange
+            var senderAccountNumber = ExistingAccountNumber;
+            var addActionResult = await _bankAccountController.CreateBankAccount(100);
+            var recipient = (addActionResult as OkObjectResult).Value as BankAccountDto;
+            var amount = 100;
+            var senderExpectedBalance = 0;
+            var recipientExpectedBalance = 200;
+
+            // Act
+            var actionResult = await _bankAccountController
+                .Transfer(senderAccountNumber, recipient.AccountNumber, amount);
+
+            // Assert
+            var okResult = actionResult as OkObjectResult;
+            var accountList = okResult.Value as ICollection<BankAccountDto>;
+
+            var senderBalance = accountList.First(account => account.AccountNumber == senderAccountNumber).Balance;
+            var recipientBalance = accountList.First(account => account.AccountNumber == recipient.AccountNumber).Balance;
+
+            Assert.Multiple(
+                () => Assert.Equal(senderExpectedBalance, senderBalance),
+                () => Assert.Equal(recipientExpectedBalance, recipientBalance));
         }
         #endregion
     }
