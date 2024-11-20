@@ -74,6 +74,10 @@ namespace api.Controllers
             {
                 recipientAccount = await _bankAccountService.Deposit(number, amount);
             }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (ArgumentException ex)
             {
                 return NotFound(ex.Message);
@@ -94,6 +98,10 @@ namespace api.Controllers
             try
             {
                 recipientAccount = await _bankAccountService.Withdraw(number, amount);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
             {

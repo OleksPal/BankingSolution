@@ -36,6 +36,9 @@ namespace api.Services
         {
             var bankAccount = await _bankAccountRepository.GetByNumber(number);
 
+            if (amount < 0)
+                throw new ArgumentOutOfRangeException("Amount should be positive");
+
             if (bankAccount is null)
                 throw new ArgumentException($"Bank account with number {number} doesn`t exists");
 
@@ -79,6 +82,9 @@ namespace api.Services
         public async Task<BankAccountDto> Withdraw(string number, decimal amount)
         {
             var bankAccount = await _bankAccountRepository.GetByNumber(number);
+
+            if (amount < 0)
+                throw new ArgumentOutOfRangeException("Amount should be positive");
 
             if (bankAccount is null)
                 throw new ArgumentException($"Bank account with number {number} doesn`t exists");
