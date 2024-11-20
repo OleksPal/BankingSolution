@@ -1,7 +1,7 @@
 ﻿using api.Services;
 using tests.Helpers;
 
-namespace tests.Service_tests
+namespace tests.ServiceTests
 {
     [Collection("TestCollection")]
     public class BankAccountServiceTests

@@ -2,7 +2,7 @@
 using api.Repositories;
 using tests.Helpers;
 
-namespace tests.Repository_tests
+namespace tests.RepositoryTests
 {
     [Collection("TestCollection")]
     public class BankAccountRepositoryTests
