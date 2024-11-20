@@ -4,6 +4,7 @@ using tests.Helpers;
 
 namespace tests.Repository_tests
 {
+    [Collection("TestCollection")]
     public class BankAccountRepositoryTests
     {
         protected readonly IBankAccountRepository _bankAccountRepository;
@@ -118,12 +119,11 @@ namespace tests.Repository_tests
         public async Task Update_ValidBankAccount_ReturnsSameAccount()
         {
             // Arrange
-            var existingBankAccount = await _bankAccountRepository.GetAll();
+            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
             var newBankAccountBalance = 1000;
 
             // Act
-            var updatedBankAccount = await _bankAccountRepository
-                .Update(existingBankAccount.First().AccountNumber, newBankAccountBalance);
+            var updatedBankAccount = await _bankAccountRepository.Update(existingAccountNumber, newBankAccountBalance);
 
             // Assert
             Assert.Equal(newBankAccountBalance, updatedBankAccount.Balance);

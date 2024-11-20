@@ -36,7 +36,7 @@ namespace api.Services
         {
             var bankAccount = await _bankAccountRepository.GetByNumber(number);
 
-            if (amount < 0)
+            if (amount <= 0)
                 throw new ArgumentOutOfRangeException("Amount should be positive");
 
             if (bankAccount is null)
@@ -108,7 +108,7 @@ namespace api.Services
         {
             var bankAccount = await _bankAccountRepository.GetByNumber(number);
 
-            if (amount < 0)
+            if (amount <= 0)
                 throw new ArgumentOutOfRangeException("Amount should be positive");
 
             if (bankAccount is null)
