@@ -1,4 +1,5 @@
-﻿using api.Services;
+﻿using api.Models;
+using api.Services;
 using tests.Helpers;
 
 namespace tests.Service_tests
@@ -63,6 +64,47 @@ namespace tests.Service_tests
 
             // Assert
             Assert.NotNull(bankAccount);
+        }
+        #endregion
+
+        #region CreateAccount
+        [Fact]
+        public async Task CreateAccount_NegativeBalance_ReturnsArgumentOutOfRangeException()
+        {
+            // Arrange
+            var negativeStartBalance = -5;
+
+            // Act
+            Func<Task> act = () => _bankAccountService.CreateAccount(negativeStartBalance);
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(act);
+        }
+
+        [Fact]
+        public async Task CreateAccount_ZeroBalance_ReturnsNewBankAccount()
+        {
+            // Arrange
+            var startBalance = 0;
+
+            // Act
+            var newBankAccount = await _bankAccountService.CreateAccount(startBalance);
+
+            // Assert
+            Assert.NotNull(newBankAccount);
+        }
+
+        [Fact]
+        public async Task CreateAccount_PositiveBalance_ReturnsNewBankAccount()
+        {
+            // Arrange
+            var startBalance = 100;
+
+            // Act
+            var newBankAccount = await _bankAccountService.CreateAccount(startBalance);
+
+            // Assert
+            Assert.NotNull(newBankAccount);
         }
         #endregion
     }
