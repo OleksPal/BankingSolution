@@ -10,6 +10,6 @@ namespace api.Services
         Task<BankAccountDto> CreateAccount(decimal balance);
         Task<BankAccountDto> Deposit(string number, decimal amount);
         Task<BankAccountDto> Withdraw(string number, decimal amount);
-        Task<BankAccountDto> Transfer(string senderNumber, string recipientNumber, decimal amount);
+        Task<ICollection<BankAccountDto>> Transfer(string senderNumber, string recipientNumber, decimal amount);
     }
 }
