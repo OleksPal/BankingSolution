@@ -1,4 +1,5 @@
-﻿using api.Repositories;
+﻿using api.Models;
+using api.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,6 +56,39 @@ namespace tests.Repository_tests
 
             // Assert
             Assert.NotNull(bankAccount);
+        }
+        #endregion
+
+        #region Insert
+        [Fact]
+        public async Task Insert_Null_ReturnsArgumentNullException()
+        {
+            // Arrange
+            BankAccount bankAccount = null;
+
+            // Act
+            Func<Task> act = () => _bankAccountRepository.Insert(bankAccount);
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentNullException>(act);
+        }
+
+        [Fact]
+        public async Task Insert_ValidBankAccount_ReturnsSameAccount()
+        {
+            // Arrange
+            var bankAccount = new BankAccount()
+            {
+                Id = Guid.NewGuid(),
+                AccountNumber = Guid.NewGuid().ToString(),
+                Balance = 1000
+            };
+
+            // Act
+            var addedBankAccount = await _bankAccountRepository.Insert(bankAccount);
+
+            // Assert
+            Assert.Same(bankAccount, addedBankAccount);
         }
         #endregion
     }
