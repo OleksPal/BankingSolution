@@ -27,6 +27,7 @@ namespace api.Services
             };
 
             await _bankAccountRepository.Insert(newBankAccount);
+            await _bankAccountRepository.SaveChanges();
 
             return newBankAccount.ToBankAccountDto();
         }
@@ -40,6 +41,7 @@ namespace api.Services
 
             var newBalance = bankAccount.Balance + amount;
             var updatedBankAccount = await _bankAccountRepository.Update(number, newBalance);
+            await _bankAccountRepository.SaveChanges();
 
             return updatedBankAccount.ToBankAccountDto();            
         }
@@ -69,6 +71,7 @@ namespace api.Services
 
             await Withdraw(senderNumber, amount);
             var updatedRecipient = await Deposit(recipientNumber, amount);
+            await _bankAccountRepository.SaveChanges();
 
             return updatedRecipient;
         }
@@ -85,6 +88,7 @@ namespace api.Services
 
             var newBalance = bankAccount.Balance - amount;
             var updatedBankAccount = await _bankAccountRepository.Update(number, newBalance);
+            await _bankAccountRepository.SaveChanges();
 
             return updatedBankAccount.ToBankAccountDto();
         }

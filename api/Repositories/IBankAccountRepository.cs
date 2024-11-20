@@ -8,5 +8,6 @@ namespace api.Repositories
         Task<BankAccount> GetByNumber(string accountNumber);
         Task<BankAccount> Insert(BankAccount bankAccount);
         Task<BankAccount> Update(string accountNumber, decimal newBalance);
+        Task SaveChanges();
     }
 }

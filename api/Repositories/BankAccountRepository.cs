@@ -27,18 +27,21 @@ namespace api.Repositories
         public async Task<BankAccount> Insert(BankAccount bankAccount)
         {
             await _context.BankAccounts.AddAsync(bankAccount);
-            await _context.SaveChangesAsync();
 
             return bankAccount;
-        }
+        }        
 
         public async Task<BankAccount> Update(string accountNumber, decimal newBalance)
         {
             var bankAccount = await GetByNumber(accountNumber);
-            bankAccount.Balance = newBalance;
-            await _context.SaveChangesAsync();
+            bankAccount.Balance = newBalance;            
 
             return bankAccount;
+        }
+
+        public async Task SaveChanges()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }
