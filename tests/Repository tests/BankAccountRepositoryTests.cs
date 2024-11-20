@@ -29,5 +29,33 @@ namespace tests.Repository_tests
             Assert.NotEmpty(accountList);
         }
         #endregion
+
+        #region GetByNumber
+        [Fact]
+        public async Task GetByNumber_NonExistentAccount_ReturnsNull()
+        {
+            // Arrange
+            var nonExistentAccountNumber = String.Empty;
+
+            // Act
+            var bankAccount = await _bankAccountRepository.GetByNumber(nonExistentAccountNumber);
+
+            // Assert
+            Assert.Null(bankAccount);
+        }
+
+        [Fact]
+        public async Task GetByNumber_ExistingAccount_ReturnsBankAccount()
+        {
+            // Arrange
+            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
+
+            // Act
+            var bankAccount = await _bankAccountRepository.GetByNumber(existingAccountNumber);
+
+            // Assert
+            Assert.NotNull(bankAccount);
+        }
+        #endregion
     }
 }
