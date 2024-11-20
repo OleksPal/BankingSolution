@@ -165,5 +165,63 @@ namespace tests.Service_tests
             Assert.Equal(expectedBalance, bankAccount.Balance);
         }
         #endregion
+
+        #region Withdraw
+        [Fact]
+        public async Task Withdraw_NonExistentAccount_ReturnsArgumentException()
+        {
+            // Arrange
+            var nonExistentAccountNumber = String.Empty;
+
+            // Act
+            Func<Task> act = () => _bankAccountService.Withdraw(nonExistentAccountNumber, 100);
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentException>(act);
+        }
+
+        [Fact]
+        public async Task Withdraw_NegativeAmount_ReturnsArgumentOutOfRangeException()
+        {
+            // Arrange
+            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
+            var negativeDepositAmount = -5;
+
+            // Act
+            Func<Task> act = () => _bankAccountService.Withdraw(existingAccountNumber, negativeDepositAmount);
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(act);
+        }
+
+        [Fact]
+        public async Task Withdraw_ZeroAmount_ReturnsArgumentOutOfRangeException()
+        {
+            // Arrange
+            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
+            var zeroDepositAmount = 0;
+
+            // Act
+            Func<Task> act = () => _bankAccountService.Withdraw(existingAccountNumber, zeroDepositAmount);
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(act);
+        }
+
+        [Fact]
+        public async Task Withdraw_ExistingUser_PositiveAmount_ReturnsUpdatedAccount()
+        {
+            // Arrange
+            var existingAccountNumber = "UAYYZZZZZZ0000012345678901234";
+            var depositAmount = 100;
+            var expectedBalance = 0;
+
+            // Act
+            var bankAccount = await _bankAccountService.Withdraw(existingAccountNumber, depositAmount);
+
+            // Assert
+            Assert.Equal(expectedBalance, bankAccount.Balance);
+        }
+        #endregion
     }
 }
