@@ -1,7 +1,7 @@
 ﻿using api.Dtos;
+using api.Mappers;
 using api.Models;
 using api.Repositories;
-using api.Mappers;
 
 namespace api.Services
 {
@@ -17,7 +17,7 @@ namespace api.Services
         public async Task<BankAccountDto> CreateAccount(decimal balance)
         {
             if (balance < 0)
-                return null;
+                throw new ArgumentOutOfRangeException("Balance should be positive");
 
             var newBankAccount = new BankAccount
             {
@@ -35,15 +35,13 @@ namespace api.Services
         {
             var bankAccount = await _bankAccountRepository.GetByNumber(number);
 
-            if (bankAccount is not null) 
-            {
-                bankAccount.Balance += amount;
-                var updatedBankAccount = await _bankAccountRepository.Update(bankAccount);
+            if (bankAccount is null)
+                throw new ArgumentException($"Bank account with number {number} doesn`t exists");
 
-                return updatedBankAccount.ToBankAccountDto();
-            }
+            var newBalance = bankAccount.Balance + amount;
+            var updatedBankAccount = await _bankAccountRepository.Update(number, newBalance);
 
-            return null;            
+            return updatedBankAccount.ToBankAccountDto();            
         }
 
         public async Task<ICollection<BankAccountDto>> GetAll()
@@ -58,49 +56,37 @@ namespace api.Services
         {
             var bankAccount = await _bankAccountRepository.GetByNumber(number);
 
+            if (bankAccount is null)
+                throw new ArgumentException($"Bank account with number {number} doesn`t exists");
+
             return bankAccount.ToBankAccountDto();
         }
 
         public async Task<BankAccountDto> Transfer(string senderNumber, string recipientNumber, decimal amount)
         {
-            var sender = await _bankAccountRepository.GetByNumber(senderNumber);
+            if (amount < 0)
+                throw new ArgumentOutOfRangeException("Amount should be positive");
 
-            if (sender is not null) 
-            {
-                var recipient = await _bankAccountRepository.GetByNumber(recipientNumber);
+            await Withdraw(senderNumber, amount);
+            var updatedRecipient = await Deposit(recipientNumber, amount);
 
-                if (recipient is not null)
-                {
-                    var senderAccount = await Withdraw(senderNumber, amount);
-
-                    if (senderAccount is null)
-                        return null;
-
-                    var updatedRecipient = await Deposit(recipientNumber, amount);
-
-                    if (updatedRecipient is null)
-                        return null;
-
-                    return updatedRecipient;
-                }
-            }
-
-            return null;
+            return updatedRecipient;
         }
 
         public async Task<BankAccountDto> Withdraw(string number, decimal amount)
         {
             var bankAccount = await _bankAccountRepository.GetByNumber(number);
 
-            if (bankAccount is not null && bankAccount.Balance >= amount)
-            {
-                bankAccount.Balance -= amount;
-                var updatedBankAccount = await _bankAccountRepository.Update(bankAccount);
+            if (bankAccount is null)
+                throw new ArgumentException($"Bank account with number {number} doesn`t exists");
 
-                return updatedBankAccount.ToBankAccountDto();
-            }
+            if (bankAccount.Balance < amount)
+                throw new ArgumentException($"Bank account with number {number} doesn`t have enough funds to withdraw");
 
-            return null;
+            var newBalance = bankAccount.Balance - amount;
+            var updatedBankAccount = await _bankAccountRepository.Update(number, newBalance);
+
+            return updatedBankAccount.ToBankAccountDto();
         }
     }
 }

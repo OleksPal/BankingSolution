@@ -32,11 +32,12 @@ namespace api.Repositories
             return bankAccount;
         }
 
-        public async Task<BankAccount> Update(BankAccount bankAccount)
+        public async Task<BankAccount> Update(string accountNumber, decimal newBalance)
         {
-            _context.BankAccounts.Update(bankAccount);
-
+            var bankAccount = await GetByNumber(accountNumber);
+            bankAccount.Balance = newBalance;
             await _context.SaveChangesAsync();
+
             return bankAccount;
         }
     }

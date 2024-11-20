@@ -1,4 +1,5 @@
-﻿using api.Services;
+﻿using api.Dtos;
+using api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -25,10 +26,20 @@ namespace api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBankAccount(string number)
         {
-            var bankAccount = await _bankAccountService.GetBankAccountByNumber(number);
+            BankAccountDto bankAccount;
 
-            if (bankAccount is null)
-                return NotFound();
+            try
+            {
+                bankAccount = await _bankAccountService.GetBankAccountByNumber(number);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
 
             return Ok(bankAccount);
         }
@@ -36,21 +47,41 @@ namespace api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBankAccount(decimal initialBalance)
         {
-            var newBankAccount = await _bankAccountService.CreateAccount(initialBalance);
+            BankAccountDto newBankAccountDto;
 
-            if (newBankAccount is null)
-                return BadRequest();
+            try
+            {
+                newBankAccountDto = await _bankAccountService.CreateAccount(initialBalance);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
 
-            return Ok(newBankAccount);
+            return Ok(newBankAccountDto);
         }
 
         [HttpPut]
         public async Task<IActionResult> Deposit(string number, decimal amount)
         {
-            var recipientAccount = await _bankAccountService.Deposit(number, amount);
+            BankAccountDto recipientAccount;
 
-            if (recipientAccount is null)
-                return BadRequest();
+            try
+            {
+                recipientAccount = await _bankAccountService.Deposit(number, amount);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
 
             return Ok(recipientAccount);
         }
@@ -58,10 +89,20 @@ namespace api.Controllers
         [HttpPut]
         public async Task<IActionResult> Withdraw(string number, decimal amount)
         {
-            var recipientAccount = await _bankAccountService.Withdraw(number, amount);
+            BankAccountDto recipientAccount;
 
-            if (recipientAccount is null)
-                return BadRequest();
+            try
+            {
+                recipientAccount = await _bankAccountService.Withdraw(number, amount);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
 
             return Ok(recipientAccount);
         }
@@ -69,10 +110,24 @@ namespace api.Controllers
         [HttpPut]
         public async Task<IActionResult> Transfer(string sender, string recipient, decimal amount)
         {
-            var recipientAccount = await _bankAccountService.Transfer(sender, recipient, amount);
+            BankAccountDto recipientAccount;
 
-            if (recipientAccount is null)
-                return BadRequest();
+            try
+            {
+                recipientAccount = await _bankAccountService.Transfer(sender, recipient, amount);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
 
             return Ok(recipientAccount);
         }
