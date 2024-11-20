@@ -22,7 +22,7 @@ namespace tests.ControllerTests
 
         #region GetAll
         [Fact]
-        public async Task GetAll_ReturnsAccountsList()
+        public async Task GetAll_ReturnsAccountList()
         {
             // Act
             var actionResult = await _bankAccountController.GetAll();
@@ -36,7 +36,7 @@ namespace tests.ControllerTests
 
         #region GetBankAccount
         [Fact]
-        public async Task GetBankAccount_Null_ReturnsArgumentException()
+        public async Task GetBankAccount_Null_ReturnsNotFound()
         {
             // Arrange
             string nonExistentAccountNumber = null;
@@ -49,7 +49,7 @@ namespace tests.ControllerTests
         }
 
         [Fact]
-        public async Task GetBankAccount_NonExistentAccount_ReturnsBankAccount()
+        public async Task GetBankAccount_NonExistentAccount_ReturnsNotFound()
         {
             // Assert
             var nonExistentAccountNumber = String.Empty;
@@ -62,10 +62,40 @@ namespace tests.ControllerTests
         }
 
         [Fact]
-        public async Task GetBankAccount_ExistingAccount_ReturnsBankAccount()
+        public async Task GetBankAccount_ExistingAccount_ReturnsOkBankAccount()
         {
             // Act
             var actionResult = await _bankAccountController.GetBankAccount(ExistingAccountNumber);
+
+            // Assert
+            var okResult = actionResult as OkObjectResult;
+            var bankAccount = okResult.Value as BankAccountDto;
+            Assert.NotNull(bankAccount);
+        }
+        #endregion
+
+        #region CreateBankAccount
+        [Fact]
+        public async Task CreateBankAccount_NegativeBalance_ReturnsBadRequest()
+        {
+            // Arrange
+            var negativeStartBalance = -5;
+
+            // Act
+            var actionResult = await _bankAccountController.CreateBankAccount(negativeStartBalance);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(actionResult);
+        }
+
+        [Fact]
+        public async Task CreateBankAccount_PositiveBalance_ReturnsOkNewBankAccount()
+        {
+            // Arrange
+            var startBalance = 100;
+
+            // Act
+            var actionResult = await _bankAccountController.CreateBankAccount(startBalance);
 
             // Assert
             var okResult = actionResult as OkObjectResult;
