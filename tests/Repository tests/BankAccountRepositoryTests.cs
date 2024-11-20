@@ -91,5 +91,48 @@ namespace tests.Repository_tests
             Assert.Same(bankAccount, addedBankAccount);
         }
         #endregion
+
+        #region Update
+        [Fact]
+        public async Task Update_Null_ReturnsNullReferenceException()
+        {
+            // Arrange
+            string bankAccountNumber = null;
+
+            // Act
+            Func<Task> act = () => _bankAccountRepository.Update(bankAccountNumber, 100);
+
+            // Assert
+            await Assert.ThrowsAsync<NullReferenceException>(act);
+        }
+
+        [Fact]
+        public async Task Update_NonExistentBankAccount_ReturnsNullReferenceException()
+        {
+            // Arrange
+            var nonExistentAccountNumber = String.Empty;
+
+            // Act
+            Func<Task> act = () => _bankAccountRepository.Update(nonExistentAccountNumber, 1000);
+
+            // Assert
+            await Assert.ThrowsAsync<NullReferenceException>(act);
+        }
+
+        [Fact]
+        public async Task Update_ValidBankAccount_ReturnsSameAccount()
+        {
+            // Arrange
+            var existingBankAccount = await _bankAccountRepository.GetAll();
+            var newBankAccountBalance = 1000;
+
+            // Act
+            var updatedBankAccount = await _bankAccountRepository
+                .Update(existingBankAccount.First().AccountNumber, newBankAccountBalance);
+
+            // Assert
+            Assert.Equal(newBankAccountBalance, updatedBankAccount.Balance);
+        }
+        #endregion
     }
 }
